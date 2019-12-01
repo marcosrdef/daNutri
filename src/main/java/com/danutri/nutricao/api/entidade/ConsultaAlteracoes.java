@@ -16,6 +16,8 @@ public class ConsultaAlteracoes {
 	private Date data;
 	@DBRef
 	private Usuario usuario;
+	@DBRef
+	private Consulta consulta;
 	private Status status;
 	public String getId() {
 		return id;

@@ -19,9 +19,16 @@ public class Consulta {
 	private String title;
 	private String mensagem;
 	private String email;
-	@DBRef
+	private Integer number;
+	@DBRef(lazy = true)
 	private Usuario nutricionista;
 	private Status status;
+	public Integer getNumber() {
+		return number;
+	}
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
 	@Transient
 	private List<ConsultaAlteracoes> alteracoes;
 	public List<ConsultaAlteracoes> getAlteracoes() {

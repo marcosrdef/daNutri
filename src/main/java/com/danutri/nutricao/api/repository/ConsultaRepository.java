@@ -7,18 +7,18 @@ import com.danutri.nutricao.api.entidade.Consulta;
 
 public interface ConsultaRepository extends MongoRepository<Consulta, String>{
 
-	Page<Consulta> findByUserIdOrderByDesc(Pageable pages, String userId);
+	Page<Consulta> findByUsuarioOrderByDateDesc(Pageable pages, String usuarioId);
 	
-	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDataDesc(
+	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDateDesc(
 			String title, String status, Pageable pages);
 	
-	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderAndUserIdByDataDesc(
-			String title, String status, String userId, Pageable pages);
+	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndUsuarioIdOrderByDateDesc(
+			String title, String status, String usuarioId, Pageable pages);
 	
 	Page<Consulta> findByNumber(Integer number, Pageable pages);
 	
-	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderAndAssignedUserOrderByDataDesc(
-			String title, String status, String assignedUser, Pageable pages);
+	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(
+			String title, String status, String nutricionistaId, Pageable pages);
 	
 	
 }

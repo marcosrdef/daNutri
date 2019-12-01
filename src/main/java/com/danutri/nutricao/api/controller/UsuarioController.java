@@ -128,7 +128,7 @@ public class UsuarioController {
 		return ResponseEntity.ok(new Response<String>());
 	}
 	
-	@GetMapping(value="{page/count}")
+	@GetMapping(value="/{page}/{count}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<Response<Page<Usuario>>> findAll(@PathVariable int page, @PathVariable int count) {
 		Response<Page<Usuario>> response = new Response<Page<Usuario>>();

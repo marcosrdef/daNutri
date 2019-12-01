@@ -53,24 +53,24 @@ public class ConsultaServiceImpl implements ConsultaService {
 	}
 
 	public Iterable<ConsultaAlteracoes> listChangeStatus(String ticketId) {
-		return this.alteracoesStatusRepository.findByConsultaIdOrderByDateChangeStatusDesc(ticketId);
+		return this.alteracoesStatusRepository.findByConsultaIdOrderByDataDesc(ticketId);
 	}
 	@Override
-	public Page<Consulta> findByCurrentUser(int page, int count, String userId) {
+	public Page<Consulta> findByCurrentUser(int page, int count, String usuarioId) {
 		Pageable pages = PageRequest.of(page, count);			
-		return this.consultaRepository.findByUserIdOrderByDesc(pages, userId);
+		return this.consultaRepository.findByUsuarioOrderByDateDesc(pages, usuarioId);
 	}
 
 	@Override
 	public Page<Consulta> findByParameters(int page, int count, String title, String status) {
 		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDataDesc(title, status, pages);
+		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDateDesc(title, status, pages);
 	}
 
 	@Override
-	public Page<Consulta> findByParametersCurrentUser(int page, int count, String title, String status, String userId) {
+	public Page<Consulta> findByParametersCurrentUser(int page, int count, String title, String status, String usuarioId) {
 		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderAndUserIdByDataDesc(title, status, userId, pages);
+		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndUsuarioIdOrderByDateDesc(title, status, usuarioId, pages);
 	}
 
 	@Override
@@ -86,9 +86,9 @@ public class ConsultaServiceImpl implements ConsultaService {
 
 	@Override
 	public Page<Consulta> findByParametersAndAssignedUser(int page, int count, String title, String status,
-			String assignedUser) {
+			String nutricionistaId) {
 		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderAndAssignedUserOrderByDataDesc(title, status, assignedUser, pages);
+		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(title, status, nutricionistaId, pages);
 	}
 
 }

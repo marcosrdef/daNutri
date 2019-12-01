@@ -31,7 +31,7 @@ public class NutricaoDaNutriApplication {
 		Usuario admin = new Usuario();
 		admin.setEmail("marcosrdef@gmail.com");
 		admin.setSenha(passwordEncoder.encode("123456"));
-		admin.setPerfil(Perfil.cliente);
+		admin.setPerfil(Perfil.ROLE_ADMIN);
 		
 		Usuario find = userRepository.findByEmail("marcosrdef@gmail.com");
 		if (find == null) {
