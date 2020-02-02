@@ -31,7 +31,21 @@ public class Usuario {
 	private String sobrenome;
 	@NotBlank(message = "Preencha o rn")
 	private String rn;
+	private String hrIniAtend;
+	private String hrFimAtend;
     private Perfil perfil;
+	public String getHrIniAtend() {
+		return hrIniAtend;
+	}
+	public void setHrIniAtend(String hrIniAtend) {
+		this.hrIniAtend = hrIniAtend;
+	}
+	public String getHrFimAtend() {
+		return hrFimAtend;
+	}
+	public void setHrFimAtend(String hrFimAtend) {
+		this.hrFimAtend = hrFimAtend;
+	}
 	public String getId() {
 		return id;
 	}

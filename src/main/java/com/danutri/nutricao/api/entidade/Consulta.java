@@ -23,6 +23,20 @@ public class Consulta {
 	@DBRef(lazy = true)
 	private Usuario nutricionista;
 	private Status status;
+	private String horIniAten;
+	private String horFinAten;
+	public String getHorIniAten() {
+		return horIniAten;
+	}
+	public void setHorIniAten(String horIniAten) {
+		this.horIniAten = horIniAten;
+	}
+	public String getHorFinAten() {
+		return horFinAten;
+	}
+	public void setHorFinAten(String horFinAten) {
+		this.horFinAten = horFinAten;
+	}
 	public Integer getNumber() {
 		return number;
 	}

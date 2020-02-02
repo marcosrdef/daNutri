@@ -15,6 +15,9 @@ public interface ConsultaRepository extends MongoRepository<Consulta, String>{
 	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndUsuarioIdOrderByDateDesc(
 			String title, String status, String usuarioId, Pageable pages);
 	
+	Page<Consulta> findByHorIniAtenIgnoreCaseContainingAndHorFinAtenIgnoreCaseContainingOrderByDateDesc(
+			String horIniAten, String horFinAten, Pageable pages);
+	
 	Page<Consulta> findByNumber(Integer number, Pageable pages);
 	
 	Page<Consulta> findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(

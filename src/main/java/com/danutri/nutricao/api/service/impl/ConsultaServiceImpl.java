@@ -91,4 +91,10 @@ public class ConsultaServiceImpl implements ConsultaService {
 		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(title, status, nutricionistaId, pages);
 	}
 
+	@Override
+	public Page<Consulta> findByHorIniAtenAndHorFinAten(int page, int count, String horIniAten, String horFinAten) {
+		Pageable pages = PageRequest.of(page, count);	
+		return this.consultaRepository.findByHorIniAtenIgnoreCaseContainingAndHorFinAtenIgnoreCaseContainingOrderByDateDesc(horIniAten, horFinAten , pages);
+	}
+
 }

@@ -18,6 +18,7 @@ public interface ConsultaService {
 	Page<Consulta> findByParameters(int page, int count, String title, String status);
 	Page<Consulta> findByParametersCurrentUser(int page, int count, String Title, String status, String userId);
 	Page<Consulta> findByNumber(int page, int count, Integer number);
+	Page<Consulta> findByHorIniAtenAndHorFinAten(int page, int count, String horIniAten, String horFinAten);
 	Iterable<Consulta> findAll();
 	public Page<Consulta> findByParametersAndAssignedUser(int page, int count, String title, String status, String assignedUser);
 }
