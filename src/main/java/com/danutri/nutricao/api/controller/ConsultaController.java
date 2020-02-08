@@ -63,6 +63,7 @@ public class ConsultaController {
 				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 				return ResponseEntity.badRequest().body(response);
 			}
+			consulta.setNutricionista(userFromEmail(consulta.getNutricionista().getEmail()));
 			consulta.setStatus(Status.Criado);
 			consulta.setUsuario(userFromRequest(request));
 			consulta.setDate(new Date());
@@ -249,10 +250,19 @@ public class ConsultaController {
 		String email = jwtTokenUtil.getUsernameFromToken(token);
 		return userService.findByEmail(email);
 	}
+	
+	private Usuario userFromEmail(String email) {		
+		return userService.findByEmail(email);
+	}
 
 	private void validateCreateConsulta(Consulta consulta, BindingResult result) {
 		if (consulta.getTitle() == null) {
 			result.addError(new ObjectError("Consulta", "título da consulta não informado"));
+			return;
+		}
+		
+		if (consulta.getNutricionista() == null || consulta.getNutricionista().getEmail() == null) {
+			result.addError(new ObjectError("Consulta", "é necessário informar a(o) nutricionista"));
 			return;
 		}
 
