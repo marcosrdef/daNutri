@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.danutri.nutricao.api.entidade.Usuario;
 import com.danutri.nutricao.api.response.Response;
+import com.danutri.nutricao.api.security.jwt.JwtTokenUtil;
 import com.danutri.nutricao.api.service.UserService;
 import com.mongodb.DuplicateKeyException;
 
@@ -34,6 +35,9 @@ public class UsuarioController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@PostMapping()
 	@PreAuthorize("hasAnyRole('ADMIN')")
@@ -129,12 +133,27 @@ public class UsuarioController {
 	}
 	
 	@GetMapping(value="/{page}/{count}")
-	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<Response<Page<Usuario>>> findAll(@PathVariable int page, @PathVariable int count) {
+	@PreAuthorize("hasAnyRole('CLIENTE','ADMIN')")
+	public ResponseEntity<Response<Page<Usuario>>> findAll(HttpServletRequest request,@PathVariable int page, @PathVariable int count) {
 		Response<Page<Usuario>> response = new Response<Page<Usuario>>();
-		Page<Usuario> usuario = userService.findAll(page, count);		
+		Usuario userRequest = userFromRequest(request);
+		Page<Usuario> usuario = null;
+		switch (userRequest.getPerfil()) {
+		case ROLE_ADMIN:
+			usuario = userService.findAll(page, count);	
+			break;		
+		case ROLE_CLIENTE:
+			usuario = userService.findAllNutr(page, count);	
+			break;
+		}		
 		response.setData(usuario);
 		return ResponseEntity.ok(response);
+	}
+	
+	private Usuario userFromRequest(HttpServletRequest request) {
+		String token = request.getHeader("Authorization");
+		String email = jwtTokenUtil.getUsernameFromToken(token);
+		return userService.findByEmail(email);
 	}
 	
 }

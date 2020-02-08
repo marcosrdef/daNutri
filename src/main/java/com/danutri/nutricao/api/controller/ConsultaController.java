@@ -29,7 +29,6 @@ import com.danutri.nutricao.api.entidade.ConsultaAlteracoes;
 import com.danutri.nutricao.api.entidade.Usuario;
 import com.danutri.nutricao.api.enums.Perfil;
 import com.danutri.nutricao.api.enums.Status;
-import com.danutri.nutricao.api.repository.ConsultaRepository;
 import com.danutri.nutricao.api.response.Response;
 import com.danutri.nutricao.api.security.jwt.JwtTokenUtil;
 import com.danutri.nutricao.api.security.model.Sumario;
@@ -53,7 +52,7 @@ public class ConsultaController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasAnyRole('ROLE_CLIENTE')")
+	@PreAuthorize("hasAnyRole('CLIENTE')")
 	public ResponseEntity<Response<Consulta>> create(HttpServletRequest request, @RequestBody Consulta consulta,
 			BindingResult result) {
 		Response<Consulta> response = new Response<Consulta>();
@@ -79,7 +78,7 @@ public class ConsultaController {
 	}
 
 	@PutMapping
-	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_NUTRICIONISTA')")
+	@PreAuthorize("hasAnyRole('CLIENTE','NUTRICIONISTA')")
 	public ResponseEntity<Response<Consulta>> update(HttpServletRequest request, @RequestBody Consulta consulta,
 			BindingResult result) {
 		Response<Consulta> response = new Response<Consulta>();
@@ -108,7 +107,7 @@ public class ConsultaController {
 	}
 
 	@GetMapping(value = "/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_NUTRICIONISTA')")
+	@PreAuthorize("hasAnyRole('CLIENTE','NUTRICIONISTA')")
 	public ResponseEntity<Response<Consulta>> findById(@PathVariable("id") String id) {
 		Response<Consulta> response = new Response<Consulta>();
 		Consulta consulta = consultaService.findById(id);
@@ -130,7 +129,7 @@ public class ConsultaController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_NUTRICIONISTA')")
+	@PreAuthorize("hasAnyRole('ADMIN','NUTRICIONISTA')")
 	public ResponseEntity<Response<String>> delete(@PathVariable("id") String id) {
 		Response<String> response = new Response<String>();
 		Consulta consulta = consultaService.findById(id);
@@ -144,7 +143,7 @@ public class ConsultaController {
 	}
 
 	@GetMapping(value = "{page}/{count}")
-	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_ADMIN','ROLE_NUTRICIONISTA')")
+	@PreAuthorize("hasAnyRole('CLIENTE','ADMIN','NUTRICIONISTA')")
 	public ResponseEntity<Response<Page<Consulta>>> findAll(HttpServletRequest request, @PathVariable int page,
 			@PathVariable int count) {
 
