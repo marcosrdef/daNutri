@@ -1,16 +1,23 @@
 package com.danutri.nutricao.api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +29,7 @@ import com.danutri.nutricao.api.entidade.ConsultaAlteracoes;
 import com.danutri.nutricao.api.entidade.Usuario;
 import com.danutri.nutricao.api.enums.Perfil;
 import com.danutri.nutricao.api.enums.Status;
+import com.danutri.nutricao.api.repository.ConsultaRepository;
 import com.danutri.nutricao.api.response.Response;
 import com.danutri.nutricao.api.security.jwt.JwtTokenUtil;
 import com.danutri.nutricao.api.service.ConsultaService;
@@ -44,7 +52,7 @@ public class ConsultaController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasAnyRole('CLIENTE')")
+	@PreAuthorize("hasAnyRole('ROLE_CLIENTE')")
 	public ResponseEntity<Response<Consulta>> create(HttpServletRequest request, @RequestBody Consulta consulta,
 			BindingResult result) {
 		Response<Consulta> response = new Response<Consulta>();
@@ -69,7 +77,7 @@ public class ConsultaController {
 	}
 
 	@PutMapping
-	@PreAuthorize("hasAnyRole('CLIENTE','ROLE_NUTRICIONISTA')")
+	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_NUTRICIONISTA')")
 	public ResponseEntity<Response<Consulta>> update(HttpServletRequest request, @RequestBody Consulta consulta,
 			BindingResult result) {
 		Response<Consulta> response = new Response<Consulta>();
@@ -96,6 +104,64 @@ public class ConsultaController {
 		}
 		return ResponseEntity.ok(response);
 	}
+	
+	@GetMapping(value = "/{id}")
+	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_NUTRICIONISTA')")
+	public ResponseEntity<Response<Consulta>> findById(@PathVariable("id") String id) {
+		Response<Consulta> response = new Response<Consulta>();
+		Consulta consulta = consultaService.findById(id);
+		if (consulta == null) {
+			response.getErrors().add("consulta não encontrada id: " + id);
+			return ResponseEntity.badRequest().body(response);
+		}
+		List<ConsultaAlteracoes> alteracoes = new ArrayList<ConsultaAlteracoes>();
+		Iterable<ConsultaAlteracoes> consultaAlteracoesCurrent = consultaService.listConsultaAlteracoes(consulta.getId());
+		for(Iterator<ConsultaAlteracoes> iterator = consultaAlteracoesCurrent.iterator(); iterator.hasNext();) {
+			ConsultaAlteracoes consultaAlteracoes = iterator.next();
+			consultaAlteracoes.setConsulta(null);
+			alteracoes.add(consultaAlteracoes);
+		}
+		consulta.setAlteracoes(alteracoes);
+		response.setData(consulta);
+		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_NUTRICIONISTA')")
+	public ResponseEntity<Response<String>> delete(@PathVariable("id") String id) {
+		Response<String> response = new Response<String>();
+		Consulta consulta = consultaService.findById(id);
+		if (consulta == null) {
+			response.getErrors().add("consulta não encontrada id: " + id);
+			return ResponseEntity.badRequest().body(response);
+		}
+		consultaService.delete(id);		
+		return ResponseEntity.ok(response);
+		
+	}
+	
+	@GetMapping(value = "{page}/{count}")
+	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_ADMIN','ROLE_NUTRICIONISTA')")
+    public  ResponseEntity<Response<Page<Consulta>>> findAll(HttpServletRequest request, @PathVariable int page, @PathVariable int count) {
+		
+		Response<Page<Consulta>> response = new Response<Page<Consulta>>();
+		Page<Consulta> consulta = null;
+		Usuario userRequest = userFromRequest(request);
+		switch(userRequest.getPerfil()) {
+		case ROLE_ADMIN:
+			consulta = consultaService.listConsulta(page, count);
+			break;
+		case ROLE_NUTRICIONISTA:
+			consulta = consultaService.findByNutricionista(page, count, userRequest.getId());
+			break;
+		case ROLE_CLIENTE:
+			consulta = consultaService.findByCurrentUser(page, count, userRequest.getId());
+			break;
+		}
+		
+		response.setData(consulta);
+		return ResponseEntity.ok(response);
+    }
 
 	private Consulta validatePerfilandStatus(HttpServletRequest request, Consulta consulta, BindingResult result) {
 		String token = request.getHeader("Authorization");

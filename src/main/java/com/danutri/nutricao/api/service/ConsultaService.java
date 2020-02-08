@@ -14,7 +14,9 @@ public interface ConsultaService {
 	void delete (String id);
 	Page<Consulta> listConsulta(int page, int count);
 	ConsultaAlteracoes createChangeStatus(ConsultaAlteracoes consultaAlteracoes);
+	Iterable<ConsultaAlteracoes> listConsultaAlteracoes(String consultaId);
 	Page<Consulta> findByCurrentUser(int page, int count, String userId);
+	Page<Consulta> findByNutricionista(int page, int count, String nutricionistaId);
 	Page<Consulta> findByParameters(int page, int count, String title, String status);
 	Page<Consulta> findByParametersCurrentUser(int page, int count, String Title, String status, String userId);
 	Page<Consulta> findByNumber(int page, int count, Integer number);

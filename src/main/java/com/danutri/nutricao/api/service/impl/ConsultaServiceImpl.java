@@ -52,13 +52,13 @@ public class ConsultaServiceImpl implements ConsultaService {
 		return this.alteracoesStatusRepository.save(consultaAlteracoes);
 	}
 
-	public Iterable<ConsultaAlteracoes> listChangeStatus(String ticketId) {
-		return this.alteracoesStatusRepository.findByConsultaIdOrderByDataDesc(ticketId);
+	public Iterable<ConsultaAlteracoes> listConsultaAlteracoes(String consultaId) {
+		return this.alteracoesStatusRepository.findByConsultaIdOrderByDataDesc(consultaId);
 	}
 	@Override
 	public Page<Consulta> findByCurrentUser(int page, int count, String usuarioId) {
 		Pageable pages = PageRequest.of(page, count);			
-		return this.consultaRepository.findByUsuarioOrderByDateDesc(pages, usuarioId);
+		return this.consultaRepository.findByUsuarioIdOrderByDateDesc(pages, usuarioId);
 	}
 
 	@Override
@@ -95,6 +95,12 @@ public class ConsultaServiceImpl implements ConsultaService {
 	public Page<Consulta> findByHorIniAtenAndHorFinAten(int page, int count, String horIniAten, String horFinAten) {
 		Pageable pages = PageRequest.of(page, count);	
 		return this.consultaRepository.findByHorIniAtenIgnoreCaseContainingAndHorFinAtenIgnoreCaseContainingOrderByDateDesc(horIniAten, horFinAten , pages);
+	}
+
+	@Override
+	public Page<Consulta> findByNutricionista(int page, int count, String nutricionistaId) {
+		Pageable pages = PageRequest.of(page, count);			
+		return this.consultaRepository.findByNutricionistaIdOrderByDateDesc(pages, nutricionistaId);
 	}
 
 }
