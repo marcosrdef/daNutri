@@ -32,6 +32,7 @@ import com.danutri.nutricao.api.enums.Status;
 import com.danutri.nutricao.api.repository.ConsultaRepository;
 import com.danutri.nutricao.api.response.Response;
 import com.danutri.nutricao.api.security.jwt.JwtTokenUtil;
+import com.danutri.nutricao.api.security.model.Sumario;
 import com.danutri.nutricao.api.service.ConsultaService;
 import com.danutri.nutricao.api.service.UserService;
 
@@ -96,15 +97,15 @@ public class ConsultaController {
 			consultaAlteracoes.setStatus(consulta.getStatus());
 			consultaAlteracoes.setConsulta(consultaPersistida);
 			consultaService.createChangeStatus(consultaAlteracoes);
-			response.setData(consultaPersistida);			
-			
-		}catch(Exception ex) {
+			response.setData(consultaPersistida);
+
+		} catch (Exception ex) {
 			response.getErrors().add(ex.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_NUTRICIONISTA')")
 	public ResponseEntity<Response<Consulta>> findById(@PathVariable("id") String id) {
@@ -115,8 +116,9 @@ public class ConsultaController {
 			return ResponseEntity.badRequest().body(response);
 		}
 		List<ConsultaAlteracoes> alteracoes = new ArrayList<ConsultaAlteracoes>();
-		Iterable<ConsultaAlteracoes> consultaAlteracoesCurrent = consultaService.listConsultaAlteracoes(consulta.getId());
-		for(Iterator<ConsultaAlteracoes> iterator = consultaAlteracoesCurrent.iterator(); iterator.hasNext();) {
+		Iterable<ConsultaAlteracoes> consultaAlteracoesCurrent = consultaService
+				.listConsultaAlteracoes(consulta.getId());
+		for (Iterator<ConsultaAlteracoes> iterator = consultaAlteracoesCurrent.iterator(); iterator.hasNext();) {
 			ConsultaAlteracoes consultaAlteracoes = iterator.next();
 			consultaAlteracoes.setConsulta(null);
 			alteracoes.add(consultaAlteracoes);
@@ -125,7 +127,7 @@ public class ConsultaController {
 		response.setData(consulta);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@DeleteMapping(value = "/{id}")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_NUTRICIONISTA')")
 	public ResponseEntity<Response<String>> delete(@PathVariable("id") String id) {
@@ -135,19 +137,20 @@ public class ConsultaController {
 			response.getErrors().add("consulta não encontrada id: " + id);
 			return ResponseEntity.badRequest().body(response);
 		}
-		consultaService.delete(id);		
+		consultaService.delete(id);
 		return ResponseEntity.ok(response);
-		
+
 	}
-	
+
 	@GetMapping(value = "{page}/{count}")
 	@PreAuthorize("hasAnyRole('ROLE_CLIENTE','ROLE_ADMIN','ROLE_NUTRICIONISTA')")
-    public  ResponseEntity<Response<Page<Consulta>>> findAll(HttpServletRequest request, @PathVariable int page, @PathVariable int count) {
-		
+	public ResponseEntity<Response<Page<Consulta>>> findAll(HttpServletRequest request, @PathVariable int page,
+			@PathVariable int count) {
+
 		Response<Page<Consulta>> response = new Response<Page<Consulta>>();
 		Page<Consulta> consulta = null;
 		Usuario userRequest = userFromRequest(request);
-		switch(userRequest.getPerfil()) {
+		switch (userRequest.getPerfil()) {
 		case ROLE_ADMIN:
 			consulta = consultaService.listConsulta(page, count);
 			break;
@@ -158,10 +161,58 @@ public class ConsultaController {
 			consulta = consultaService.findByCurrentUser(page, count, userRequest.getId());
 			break;
 		}
-		
+
 		response.setData(consulta);
 		return ResponseEntity.ok(response);
-    }
+	}
+
+	public ResponseEntity<Response<Sumario>> findChart() {
+		Response<Sumario> response = new Response<Sumario>();
+		Sumario sumario = new Sumario();
+		int totalCriado = 0;
+		int totalAgendado = 0;
+		int totalCancelado = 0;
+		int totalReagendado = 0;
+		int totalmAtendimento = 0;
+		int totalConcluido = 0;
+
+		Iterable<Consulta> consultas = consultaService.findAll();
+
+		if (consultas != null) {
+			for (Iterator<Consulta> iterator = consultas.iterator(); iterator.hasNext();) {
+				Consulta consulta = iterator.next();
+				if (consulta.getStatus().equals(Status.Agendado)) {
+					totalAgendado++;
+				}
+				if (consulta.getStatus().equals(Status.Cancelado)) {
+					totalCancelado++;
+				}
+				if (consulta.getStatus().equals(Status.Criado)) {
+					totalCriado++;
+				}
+				if (consulta.getStatus().equals(Status.Concluido)) {
+					totalConcluido++;
+				}
+				if (consulta.getStatus().equals(Status.EmAtendimento)) {
+					totalmAtendimento++;
+				}
+				if (consulta.getStatus().equals(Status.Reagendado)) {
+					totalReagendado++;
+				}
+			}
+
+		}
+
+		sumario.setTotalAgendado(totalAgendado);
+		sumario.setTotalCancelado(totalCancelado);
+		sumario.setTotalConcluido(totalConcluido);
+		sumario.setTotalCriado(totalCriado);
+		sumario.setTotalmAtendimento(totalmAtendimento);
+		sumario.setTotalReagendado(totalReagendado);
+
+		response.setData(sumario);
+		return ResponseEntity.ok(response);
+	}
 
 	private Consulta validatePerfilandStatus(HttpServletRequest request, Consulta consulta, BindingResult result) {
 		String token = request.getHeader("Authorization");
@@ -169,19 +220,20 @@ public class ConsultaController {
 		Usuario usuario = userService.findByEmail(email);
 		Consulta consultaaux = consultaService.findById(consulta.getId());
 		if (consulta.getId() == null) {
-			result.addError(new ObjectError("Consulta","Id não informado"));
+			result.addError(new ObjectError("Consulta", "Id não informado"));
 			return null;
 		}
 		if (consulta.getTitle() == null) {
-			result.addError(new ObjectError("Consulta","Título não informado"));
+			result.addError(new ObjectError("Consulta", "Título não informado"));
 			return null;
 		}
 		if ((Perfil.ROLE_CLIENTE).equals(usuario.getPerfil()) && !(Status.Cancelado).equals(consulta.getStatus())) {
-			result.addError(new ObjectError("Consulta","o Cliente não pode alterar o status da consulta, contate o administrator"));
+			result.addError(new ObjectError("Consulta",
+					"o Cliente não pode alterar o status da consulta, contate o administrator"));
 			return null;
 		}
 		if (consultaaux == null) {
-			result.addError(new ObjectError("Consulta","Consulta não encontrada no sistema"));
+			result.addError(new ObjectError("Consulta", "Consulta não encontrada no sistema"));
 			return null;
 		}
 		return consultaaux;
