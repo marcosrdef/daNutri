@@ -1,5 +1,5 @@
 package com.danutri.nutricao.api.enums;
 
 public enum Status {
- Agendado, Cancelado, Reagendado, EmAtendimento, Concluido
+ Criado, Agendado, Cancelado, Reagendado, EmAtendimento, Concluido
 }

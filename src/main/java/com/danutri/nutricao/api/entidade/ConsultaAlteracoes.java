@@ -18,6 +18,12 @@ public class ConsultaAlteracoes {
 	private Usuario usuario;
 	@DBRef
 	private Consulta consulta;
+	public Consulta getConsulta() {
+		return consulta;
+	}
+	public void setConsulta(Consulta consulta) {
+		this.consulta = consulta;
+	}
 	private Status status;
 	public String getId() {
 		return id;

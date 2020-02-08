@@ -16,6 +16,7 @@ public class Consulta {
 	@DBRef(lazy=true)
 	private Usuario usuario;
 	private Date date;
+	private String dataConsulta;
 	private String title;
 	private String mensagem;
 	private String email;
@@ -25,6 +26,13 @@ public class Consulta {
 	private Status status;
 	private String horIniAten;
 	private String horFinAten;
+	
+	public String getDataConsulta() {
+		return dataConsulta;
+	}
+	public void setDataConsulta(String dataConsulta) {
+		this.dataConsulta = dataConsulta;
+	}
 	public String getHorIniAten() {
 		return horIniAten;
 	}
