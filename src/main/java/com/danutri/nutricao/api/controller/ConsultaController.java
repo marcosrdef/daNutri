@@ -166,6 +166,7 @@ public class ConsultaController {
 		return ResponseEntity.ok(response);
 	}
 
+	@GetMapping(value = "/summary")
 	public ResponseEntity<Response<Sumario>> findChart() {
 		Response<Sumario> response = new Response<Sumario>();
 		Sumario sumario = new Sumario();
