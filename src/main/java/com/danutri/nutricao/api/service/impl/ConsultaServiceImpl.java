@@ -18,13 +18,13 @@ import com.danutri.nutricao.api.service.ConsultaService;
 public class ConsultaServiceImpl implements ConsultaService {
 
 	@Autowired
-	private ConsultaRepository consultaRepository;	
+	private ConsultaRepository consultaRepository;
 	@Autowired
 	private AlteracoesStatusRepository alteracoesStatusRepository;
-	
+
 	@Override
 	public Consulta createOrUpdate(Consulta consulta) {
-		
+
 		return this.consultaRepository.save(consulta);
 	}
 
@@ -43,7 +43,7 @@ public class ConsultaServiceImpl implements ConsultaService {
 
 	@Override
 	public Page<Consulta> listConsulta(int page, int count) {
-		Pageable pages = PageRequest.of(page, count);			
+		Pageable pages = PageRequest.of(page, count);
 		return this.consultaRepository.findAll(pages);
 	}
 
@@ -55,27 +55,32 @@ public class ConsultaServiceImpl implements ConsultaService {
 	public Iterable<ConsultaAlteracoes> listConsultaAlteracoes(String consultaId) {
 		return this.alteracoesStatusRepository.findByConsultaIdOrderByDataDesc(consultaId);
 	}
+
 	@Override
 	public Page<Consulta> findByCurrentUser(int page, int count, String usuarioId) {
-		Pageable pages = PageRequest.of(page, count);			
+		Pageable pages = PageRequest.of(page, count);
 		return this.consultaRepository.findByUsuarioIdOrderByDateDesc(pages, usuarioId);
 	}
 
 	@Override
 	public Page<Consulta> findByParameters(int page, int count, String title, String status) {
-		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDateDesc(title, status, pages);
+		Pageable pages = PageRequest.of(page, count);
+		return this.consultaRepository
+				.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingOrderByDateDesc(title, status, pages);
 	}
 
 	@Override
-	public Page<Consulta> findByParametersCurrentUser(int page, int count, String title, String status, String usuarioId) {
-		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndUsuarioIdOrderByDateDesc(title, status, usuarioId, pages);
+	public Page<Consulta> findByParametersCurrentUser(int page, int count, String title, String status,
+			String usuarioId) {
+		Pageable pages = PageRequest.of(page, count);
+		return this.consultaRepository
+				.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndUsuarioIdOrderByDateDesc(title, status,
+						usuarioId, pages);
 	}
 
 	@Override
 	public Page<Consulta> findByNumber(int page, int count, Integer number) {
-		Pageable pages = PageRequest.of(page, count);	
+		Pageable pages = PageRequest.of(page, count);
 		return this.consultaRepository.findByNumber(number, pages);
 	}
 
@@ -87,20 +92,30 @@ public class ConsultaServiceImpl implements ConsultaService {
 	@Override
 	public Page<Consulta> findByParametersAndAssignedUser(int page, int count, String title, String status,
 			String nutricionistaId) {
-		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(title, status, nutricionistaId, pages);
+		Pageable pages = PageRequest.of(page, count);
+		return this.consultaRepository
+				.findByTitleIgnoreCaseContainingAndStatusIgnoreCaseContainingAndNutricionistaIdOrderByDateDesc(title,
+						status, nutricionistaId, pages);
 	}
 
 	@Override
 	public Page<Consulta> findByHorIniAtenAndHorFinAten(int page, int count, String horIniAten, String horFinAten) {
-		Pageable pages = PageRequest.of(page, count);	
-		return this.consultaRepository.findByHorIniAtenIgnoreCaseContainingAndHorFinAtenIgnoreCaseContainingOrderByDateDesc(horIniAten, horFinAten , pages);
+		Pageable pages = PageRequest.of(page, count);
+		return this.consultaRepository
+				.findByHorIniAtenIgnoreCaseContainingAndHorFinAtenIgnoreCaseContainingOrderByDateDesc(horIniAten,
+						horFinAten, pages);
 	}
 
 	@Override
 	public Page<Consulta> findByNutricionista(int page, int count, String nutricionistaId) {
-		Pageable pages = PageRequest.of(page, count);			
+		Pageable pages = PageRequest.of(page, count);
 		return this.consultaRepository.findByNutricionistaIdOrderByDateDesc(pages, nutricionistaId);
+	}
+
+	@Override
+	public Consulta findByDataConsultaAndHoraAten(String nutricionistaId, String horIniAtend, String dataConsulta) {
+		return this.consultaRepository.findByNutricionistaIdAndHorIniAtenAndDataConsultaOrderByDateDesc(nutricionistaId, horIniAtend,
+				dataConsulta);
 	}
 
 }

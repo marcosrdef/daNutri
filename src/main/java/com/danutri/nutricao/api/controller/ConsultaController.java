@@ -29,6 +29,7 @@ import com.danutri.nutricao.api.entidade.ConsultaAlteracoes;
 import com.danutri.nutricao.api.entidade.Usuario;
 import com.danutri.nutricao.api.enums.Perfil;
 import com.danutri.nutricao.api.enums.Status;
+import com.danutri.nutricao.api.repository.ConsultaRepository;
 import com.danutri.nutricao.api.response.Response;
 import com.danutri.nutricao.api.security.jwt.JwtTokenUtil;
 import com.danutri.nutricao.api.security.model.Sumario;
@@ -250,8 +251,8 @@ public class ConsultaController {
 		String email = jwtTokenUtil.getUsernameFromToken(token);
 		return userService.findByEmail(email);
 	}
-	
-	private Usuario userFromEmail(String email) {		
+
+	private Usuario userFromEmail(String email) {
 		return userService.findByEmail(email);
 	}
 
@@ -260,9 +261,24 @@ public class ConsultaController {
 			result.addError(new ObjectError("Consulta", "título da consulta não informado"));
 			return;
 		}
-		
+
 		if (consulta.getNutricionista() == null || consulta.getNutricionista().getEmail() == null) {
 			result.addError(new ObjectError("Consulta", "é necessário informar a(o) nutricionista"));
+			return;
+		}
+
+		Usuario nutricionista = userFromEmail(consulta.getNutricionista().getEmail());
+
+		if (nutricionista == null) {
+			result.addError(new ObjectError("Consulta", "selecione um nutricionista cadastrado no sistema"));
+			return;
+		}
+
+		Consulta consultaExistente = consultaService.findByDataConsultaAndHoraAten(nutricionista.getId(), consulta.getHorIniAten(), consulta.getDataConsulta());
+
+		if (consultaExistente != null) {
+			result.addError(new ObjectError("Consulta",
+					"Data e Horário não disponível para consulta, selecione um horário disponível"));
 			return;
 		}
 
